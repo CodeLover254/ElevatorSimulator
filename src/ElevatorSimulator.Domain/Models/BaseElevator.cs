@@ -8,7 +8,7 @@ public abstract class BaseElevator
     public int CurrentFloor { get; set; } = 0;
     public ElevatorType ElevatorType { get; set; }
     public Direction Direction { get; set; } = Direction.NEUTRAL;
-    public ElevatorState ElevatorState { get; set; } = ElevatorState.IDLE;
+    public ElevatorState ElevatorState { get; set; } = ElevatorState.Idle;
     protected PriorityQueue<Request, int> RequestQueue { get; set; } = new PriorityQueue<Request, int>();
 
     public abstract bool IsFullyLoaded();
