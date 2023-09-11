@@ -17,13 +17,13 @@ public abstract class BaseElevator
 
     public abstract bool IsFullyLoaded();
     public abstract int RemainingCapacity();
-    
+    public abstract int GetMaximumCapacity();
     public abstract string GetStatus();
     public abstract void ModifyLoading(int number, ElevatorLoadingOptions loadingOptions);
 
     public virtual int GetAvailabilityScore(Request request)
     {
-        //Check for matching request type
+        //Check for matching request type and if the elevator is fully loaded
         if (request.RequestType != ElevatorType || IsFullyLoaded()) return (int)ElevatorAvailability.Unavailable;
         var score = 0;
         //closeness to the requester as a scoring factor
@@ -32,15 +32,31 @@ public abstract class BaseElevator
         //direction as a scoring factor
         if (request.Direction == Direction)
         {
-            score += 2;
+            score += HighestFloor;
         }else if (Direction == Direction.Neutral)
         {
-            score += 1;
+            score += HighestFloor/2;
         }
         //elevator loading as a factor
-        score += RemainingCapacity();
+        score += (RemainingCapacity() * HighestFloor) / GetMaximumCapacity();
 
         return score;
+    }
+
+    public bool ReceiveRequest(Request request)
+    {
+        if (request.Direction == Direction.Up)
+        {
+            if (CurrentFloor > request.SourceFloor) return false;//the elevator could have passed already
+            UpwardQueue.Enqueue(request,request);
+        }
+        else
+        {
+            if (CurrentFloor < request.SourceFloor) return false;
+            DownwardQueue.Enqueue(request, request);
+        }
+
+        return true;
     }
 
     private void Run()
