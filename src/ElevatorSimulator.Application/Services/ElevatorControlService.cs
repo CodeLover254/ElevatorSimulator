@@ -1,4 +1,5 @@
 ﻿using ElevatorSimulator.Application.Interfaces;
+using ElevatorSimulator.Domain.Exceptions;
 using ElevatorSimulator.Domain.Models;
 
 namespace ElevatorSimulator.Application.Services;
@@ -12,14 +13,17 @@ public class ElevatorControlService: IElevatorControlService
         _building = building;
     }
 
-    public Task<string> GetElevatorStatus(string elevatorLabel)
+    public string GetElevatorStatus(string elevatorLabel)
     {
-        throw new NotImplementedException();
+        var elevator = _building.Elevators[elevatorLabel];
+        if (elevator == null) throw new ElevatorControlException("Invalid elevator label");
+        return elevator.GetStatus();
     }
 
-    public Task<IEnumerable<string>> GetAllElevatorStatus()
+    public IEnumerable<string> GetAllElevatorStatus()
     {
-        throw new NotImplementedException();
+        if (!_building.Elevators.Any()) throw new ElevatorControlException("No available elevators in the building");
+        return _building.Elevators.Select(e => e.Value.GetStatus());
     }
 
     public Task<BaseElevator> EnqueueRequest(Request request)
