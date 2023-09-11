@@ -13,6 +13,11 @@ public class ElevatorControlService: IElevatorControlService
         _building = building;
     }
 
+    public IEnumerable<string> GetElevatorLabels()
+    {
+        return _building.Elevators.Select(e => e.Value.Label);
+    }
+
     public string GetElevatorStatus(string elevatorLabel)
     {
         var elevator = _building.Elevators[elevatorLabel];
@@ -25,6 +30,15 @@ public class ElevatorControlService: IElevatorControlService
         if (!_building.Elevators.Any()) throw new DomainException("No available elevators in the building");
         return _building.Elevators.Select(e => e.Value.GetStatus());
     }
+
+    public void ActivateElevators()
+    {
+        foreach (var elevator in _building.Elevators.Values)
+        {
+            elevator.Activate();
+        }
+    }
+
 
     public Task<BaseElevator> EnqueueRequest(Request request)
     {
