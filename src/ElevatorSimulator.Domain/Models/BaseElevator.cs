@@ -47,6 +47,7 @@ public abstract class BaseElevator
     {
         var boarding = Math.Min(RemainingCapacity(), request.Capacity);
         request.Capacity = boarding;
+        //todo deal with ElevatorDestination instead
         if (request.Direction == Direction.Up)
         {
             UpwardQueue.Enqueue(request,request);
@@ -128,7 +129,9 @@ public abstract class BaseElevator
         var otherQueue = targetQueue == UpwardQueue ? DownwardQueue : UpwardQueue;
         var otherDirection = Direction == Direction.Up ? Direction.Down : Direction.Up;
         //load or unload
-        //todo fix docking logic
+        //todo fix docking logic by utlizing a destinations queue as the factor
+        //todo so long as the destination is set where the source floor is not same as 
+        //todo current floor.
         var elevatorRequest = targetQueue.Peek();
         if (CurrentFloor == elevatorRequest.DestinationFloor)
         {
