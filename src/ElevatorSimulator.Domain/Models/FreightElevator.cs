@@ -34,6 +34,7 @@ public class FreightElevator: BaseElevator
         {
             if (CurrentWeight + number > MaximumWeight) throw new DomainException("Maximum weight cannot be exceeded");
             CurrentWeight += number;
+            return;
         }
 
         CurrentWeight -= number;

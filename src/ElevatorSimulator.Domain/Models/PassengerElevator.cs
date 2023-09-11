@@ -34,6 +34,7 @@ public class PassengerElevator: BaseElevator
         {
             if (Passengers + number > MaximumPassengers) throw new DomainException("Maximum number of passengers cannot be exceeded");
             Passengers += number;
+            return;
         }
 
         Passengers -= number;
