@@ -6,7 +6,7 @@ namespace ElevatorSimulator.Domain.Models;
 public class FreightElevator: BaseElevator
 {
     public int MaximumWeight { get; set; }
-    public int CurrentWeight { get; set; }
+    public int CurrentWeight { get; set; } = 0;
 
     public override bool IsFullyLoaded()
     {
@@ -32,7 +32,7 @@ public class FreightElevator: BaseElevator
     {
         if (loadingOptions == ElevatorLoadingOptions.Add)
         {
-            if (CurrentWeight + number > MaximumWeight) throw new ElevatorControlException("Maximum weight cannot be exceeded");
+            if (CurrentWeight + number > MaximumWeight) throw new DomainException("Maximum weight cannot be exceeded");
             CurrentWeight += number;
         }
 

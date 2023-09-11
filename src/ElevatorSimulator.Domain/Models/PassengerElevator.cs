@@ -6,7 +6,7 @@ namespace ElevatorSimulator.Domain.Models;
 public class PassengerElevator: BaseElevator
 {
     public int MaximumPassengers { get; set; }
-    public int Passengers { get; set; }
+    public int Passengers { get; set; } = 0;
 
     public override bool IsFullyLoaded()
     {
@@ -32,7 +32,7 @@ public class PassengerElevator: BaseElevator
     {
         if (loadingOptions == ElevatorLoadingOptions.Add)
         {
-            if (Passengers + number > MaximumPassengers) throw new ElevatorControlException("Maximum number of passengers cannot be exceeded");
+            if (Passengers + number > MaximumPassengers) throw new DomainException("Maximum number of passengers cannot be exceeded");
             Passengers += number;
         }
 
