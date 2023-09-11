@@ -12,8 +12,8 @@ public abstract class BaseElevator
     public ElevatorType ElevatorType { get; set; }
     protected Direction Direction = Direction.Neutral;
     protected ElevatorState ElevatorState = ElevatorState.Idle;
-    protected readonly PriorityQueue<Request, Request> UpwardQueue = new PriorityQueue<Request, Request>(new RequestInverseComparer());
-    protected readonly PriorityQueue<Request, Request> DownwardQueue = new PriorityQueue<Request, Request>(new RequestComparer());
+    protected readonly PriorityQueue<Request, Request> UpwardQueue = new PriorityQueue<Request, Request>(new RequestComparer());
+    protected readonly PriorityQueue<Request, Request> DownwardQueue = new PriorityQueue<Request, Request>(new RequestInverseComparer());
 
     public abstract bool IsFullyLoaded();
     public abstract int RemainingCapacity();
@@ -43,20 +43,25 @@ public abstract class BaseElevator
         return score;
     }
 
-    public bool ReceiveRequest(Request request)
+    public int ReceiveRequest(Request request)
     {
+        var boarding = Math.Min(RemainingCapacity(), request.Capacity);
+        request.Capacity = boarding;
         if (request.Direction == Direction.Up)
         {
-            if (CurrentFloor > request.SourceFloor) return false;//the elevator could have passed already
             UpwardQueue.Enqueue(request,request);
         }
         else
         {
-            if (CurrentFloor < request.SourceFloor) return false;
             DownwardQueue.Enqueue(request, request);
         }
 
-        return true;
+        if (CurrentFloor == request.SourceFloor)
+        {
+            ModifyLoading(boarding, ElevatorLoadingOptions.Add);
+        }
+
+        return boarding;
     }
 
     private void Run()
@@ -75,6 +80,7 @@ public abstract class BaseElevator
             }else if (ElevatorState == ElevatorState.Moving)
             {
                 var recentRequest = Direction == Direction.Up ? UpwardQueue.Peek() : DownwardQueue.Peek();
+                Console.WriteLine($"Latest request: Source:{recentRequest.SourceFloor} Destination: {recentRequest.DestinationFloor}");
                 DockIfNeeded(recentRequest);
             }
             else
@@ -122,15 +128,20 @@ public abstract class BaseElevator
         var otherQueue = targetQueue == UpwardQueue ? DownwardQueue : UpwardQueue;
         var otherDirection = Direction == Direction.Up ? Direction.Down : Direction.Up;
         //load or unload
-        var elevatorRequest = targetQueue.Dequeue();
+        //todo fix docking logic
+        var elevatorRequest = targetQueue.Peek();
         if (CurrentFloor == elevatorRequest.DestinationFloor)
         {
             ModifyLoading(elevatorRequest.Capacity, ElevatorLoadingOptions.Remove);
+            //reached destination. request can be dequeued
+            targetQueue.Dequeue();
         }
 
         if (CurrentFloor == elevatorRequest.SourceFloor)
         {
             ModifyLoading(elevatorRequest.Capacity, ElevatorLoadingOptions.Add);
+            Move(elevatorRequest.Direction);
+            return;
         }
         //check if queue has more items then move in that direction. 
         if (targetQueue.Count > 0)
@@ -157,6 +168,7 @@ public abstract class BaseElevator
     public void Activate()
     {
         Thread elevatorThread = new Thread(Run);
+        elevatorThread.IsBackground = true;
         elevatorThread.Start();
     }
     
