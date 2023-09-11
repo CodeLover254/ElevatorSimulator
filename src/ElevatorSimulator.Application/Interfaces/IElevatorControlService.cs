@@ -8,5 +8,5 @@ public interface IElevatorControlService
     string GetElevatorStatus(string elevatorLabel);
     IEnumerable<string> GetAllElevatorStatus();
     void ActivateElevators();
-    Task<BaseElevator> EnqueueRequest(Request request);
+    Task<EnqueueResult> EnqueueRequest(Request request);
 }
