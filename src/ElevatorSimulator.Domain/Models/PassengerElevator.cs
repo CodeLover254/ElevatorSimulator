@@ -18,6 +18,11 @@ public class PassengerElevator: BaseElevator
         return MaximumPassengers - Passengers;
     }
 
+    public override int GetMaximumCapacity()
+    {
+        return MaximumPassengers;
+    }
+
     public override string GetStatus()
     {
         return $"Elevator {Label} is {ElevatorState} at Floor {CurrentFloor} carrying {Passengers} passengers";

@@ -18,6 +18,11 @@ public class FreightElevator: BaseElevator
         return MaximumWeight - CurrentWeight;
     }
 
+    public override int GetMaximumCapacity()
+    {
+        return MaximumWeight;
+    }
+
     public override string GetStatus()
     {
         return $"Elevator {Label} is {ElevatorState} at Floor {CurrentFloor}. Freight onboard is {CurrentWeight} Kgs";
