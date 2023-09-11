@@ -85,7 +85,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
                 continue;
             }
 
-            if (!predicate.Invoke(input))
+            if (predicate(input))
             {
                 Console.WriteLine(message);
                 continue;
@@ -100,19 +100,17 @@ public class ElevatorConsoleService: IElevatorConsoleService
     {
         while (true)
         {
-            Console.WriteLine(@"
-        ===================================
-               Elevator System
-        ===================================
-        1. View Single Elevator Status
-        2. View All Elevators Status
-        3. Request Elevator
-        4. Quit Application
-        ===================================
-        ");
+            Console.WriteLine("================================");
+            Console.WriteLine("         Elevator System        ");
+            Console.WriteLine("=================================");
+            Console.WriteLine("1. View Single Elevator Status");
+            Console.WriteLine("2. View All Elevators Status");
+            Console.WriteLine("3. Request Elevator");
+            Console.WriteLine("4. Quit Application");
+            Console.WriteLine("=================================");
             int option = GetAndValidateNumericInput(input=> input < 1 || input > 4, "Invalid input. Try again");
-            
-            if(option == 4) break;
+
+            if (option == 4) break;
 
             switch (option)
             {
@@ -138,7 +136,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
         while (true)
         {
             elevatorLabel = Console.ReadLine();
-            if (string.IsNullOrEmpty(elevatorLabel) || !elevatorLabel.Contains(elevatorLabel))
+            if (string.IsNullOrEmpty(elevatorLabel) || !elevatorLabels.Contains(elevatorLabel))
             {
                 Console.WriteLine("Please enter a valid elevator label");
                 continue;
@@ -170,7 +168,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
             "Invalid destination floor.Try again.");
         Console.WriteLine("Enter number of passengers: ");
         int passengers = GetAndValidateNumericInput(i => i < 0, "There must be at least one passenger");
-        var selectedElevator = await _elevatorControlService.EnqueueRequest(new Request
+        var enqueueRequest = await _elevatorControlService.EnqueueRequest(new Request
         {
             SourceFloor = sourceFloor,
             DestinationFloor = destinationFloor,
@@ -179,7 +177,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
             RequestType = ElevatorType.Passenger
         });
         
-        Console.WriteLine($"Elevator {selectedElevator.Label} is on its way.");
+        Console.WriteLine($"Elevator {enqueueRequest.ElevatorLabel} is on its way. Only {enqueueRequest.BoardedCapacity} will be taken.");
     }
 
     public async Task Interact()
