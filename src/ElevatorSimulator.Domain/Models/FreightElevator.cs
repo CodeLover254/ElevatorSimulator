@@ -1,4 +1,7 @@
-﻿namespace ElevatorSimulator.Domain.Models;
+﻿using ElevatorSimulator.Domain.Enums;
+using ElevatorSimulator.Domain.Exceptions;
+
+namespace ElevatorSimulator.Domain.Models;
 
 public class FreightElevator: BaseElevator
 {
@@ -17,6 +20,17 @@ public class FreightElevator: BaseElevator
 
     public override string GetStatus()
     {
-        throw new NotImplementedException();
+        return $"Elevator {Label} is {ElevatorState} at Floor {CurrentFloor}. Freight onboard is {CurrentWeight} Kgs";
+    }
+
+    public override void ModifyLoading(int number, ElevatorLoadingOptions loadingOptions)
+    {
+        if (loadingOptions == ElevatorLoadingOptions.Add)
+        {
+            if (CurrentWeight + number > MaximumWeight) throw new ElevatorControlException("Maximum weight cannot be exceeded");
+            CurrentWeight += number;
+        }
+
+        CurrentWeight -= number;
     }
 }
