@@ -40,9 +40,9 @@ public class ElevatorControlService: IElevatorControlService
     }
 
 
-    public Task<BaseElevator> EnqueueRequest(Request request)
+    public async Task<EnqueueResult> EnqueueRequest(Request request)
     {
-        return Task.Run(() =>
+        return await Task.Run(() =>
         {
             var availableElevators = _building.Elevators.Select((kvPair) =>
                 {
@@ -57,10 +57,14 @@ public class ElevatorControlService: IElevatorControlService
 
             var highestScoringElevator = availableElevators.First();
             var selectedElevator = _building.Elevators[highestScoringElevator.Label];
-            var assignResult = selectedElevator.ReceiveRequest(request);
-            if (!assignResult) throw new DomainException("Unable to request elevator. Try again");
+            var boarded = selectedElevator.ReceiveRequest(request);
 
-            return selectedElevator;
+
+            return new EnqueueResult
+            {
+                ElevatorLabel = selectedElevator.Label,
+                BoardedCapacity = boarded
+            };
         });
     }
 }
