@@ -73,7 +73,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
 
-    public void Interact()
+    public async Task Interact()
     {
         try
         {
