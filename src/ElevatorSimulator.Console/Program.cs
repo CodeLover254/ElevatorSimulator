@@ -15,7 +15,7 @@ var loggingFactory = LoggerFactory.Create(builder =>
 
 var configuration = configurationBuilder.Build();
 var consoleService = new ElevatorConsoleService(configuration, loggingFactory);
-consoleService.Interact();
+await consoleService.Interact();
 
 
 //needed for XUnit tests
