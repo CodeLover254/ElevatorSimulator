@@ -2,5 +2,5 @@
 
 public enum Direction
 {
-    UP,DOWN,NEUTRAL
+    Up,Down,Neutral
 }
