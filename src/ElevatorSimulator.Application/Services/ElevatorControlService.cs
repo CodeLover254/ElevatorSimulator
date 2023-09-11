@@ -28,6 +28,25 @@ public class ElevatorControlService: IElevatorControlService
 
     public Task<BaseElevator> EnqueueRequest(Request request)
     {
-        throw new NotImplementedException();
+        return Task.Run(() =>
+        {
+            var availableElevators = _building.Elevators.Select((kvPair) =>
+                {
+                    var elevator = kvPair.Value;
+                    return (elevator.Label, AvailabilityScore: elevator.GetAvailabilityScore(request));
+                })
+                .OrderByDescending(x => x.AvailabilityScore)
+                .ToList();
+
+            if (!availableElevators.Any())
+                throw new ElevatorControlException("No available elevators to serve your request");
+
+            var highestScoringElevator = availableElevators.First();
+            var selectedElevator = _building.Elevators[highestScoringElevator.Label];
+            var assignResult = selectedElevator.ReceiveRequest(request);
+            if (!assignResult) throw new ElevatorControlException("Unable to request elevator. Try again");
+
+            return selectedElevator;
+        });
     }
 }
