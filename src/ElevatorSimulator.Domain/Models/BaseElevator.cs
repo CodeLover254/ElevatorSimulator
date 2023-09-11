@@ -90,12 +90,14 @@ public abstract class BaseElevator
     {
         ElevatorState = ElevatorState.Moving;
         Direction = direction;
-        if (direction == Direction.Up)
+        switch (direction)
         {
-            CurrentFloor++;
-        }else if (direction == Direction.Down)
-        {
-            CurrentFloor--;
+            case Direction.Up:
+                CurrentFloor++;
+                break;
+            case Direction.Down:
+                CurrentFloor--;
+                break;
         }
     }
 
