@@ -188,7 +188,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    /// Method create session for user to request an elevator
+    /// Method creates session for user to request an elevator
     /// </summary>
     private async Task ProcessRequestElevator()
     {
