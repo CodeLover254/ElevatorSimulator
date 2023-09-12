@@ -61,6 +61,9 @@ public abstract class BaseElevator
         {
             ModifyLoading(boarding, ElevatorLoadingOptions.Add);
         }
+        
+        //if the lift is idle then automatically set the direction of the first part of the journey
+        if (ElevatorState == ElevatorState.Idle) Direction = request.Direction;
 
         return boarding;
     }
