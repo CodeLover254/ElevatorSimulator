@@ -12,8 +12,8 @@ public abstract class BaseElevator
     public ElevatorType ElevatorType { get; set; }
     protected Direction Direction = Direction.Neutral;
     protected ElevatorState ElevatorState = ElevatorState.Idle;
-    protected readonly PriorityQueue<Request, Request> UpwardQueue = new PriorityQueue<Request, Request>(new RequestComparer());
-    protected readonly PriorityQueue<Request, Request> DownwardQueue = new PriorityQueue<Request, Request>(new RequestInverseComparer());
+    protected readonly PriorityQueue<ElevatorDestination, ElevatorDestination> UpwardQueue = new(new ElevatorDestinationComparer());
+    protected readonly PriorityQueue<ElevatorDestination, ElevatorDestination> DownwardQueue = new(new ElevatorDestinationInverseComparer());
 
     public abstract bool IsFullyLoaded();
     public abstract int RemainingCapacity();
@@ -43,28 +43,66 @@ public abstract class BaseElevator
         return score;
     }
 
-    public int ReceiveRequest(Request request)
+    private Direction DetermineDefaultDirection(Request request)
+    {
+        var direction = Direction.Up;
+        if (request.SourceFloor < CurrentFloor)
+        {
+            direction = Direction.Down;
+        }else if (request.SourceFloor == CurrentFloor)
+        {
+            direction = request.DestinationFloor > CurrentFloor ? Direction.Up : Direction.Down;
+        }
+
+        return direction;
+    }
+
+    public int ScheduleRequest(Request request)
     {
         var boarding = Math.Min(RemainingCapacity(), request.Capacity);
         request.Capacity = boarding;
-        //todo deal with ElevatorDestination instead
-        if (request.Direction == Direction.Up)
+
+        var direction = DetermineDefaultDirection(request);
+        //if elevator is idle the first request sets direction
+        if (ElevatorState == ElevatorState.Idle) Direction = direction;
+        
+        if (request.SourceFloor != CurrentFloor)
         {
-            UpwardQueue.Enqueue(request,request);
+            //in this case 2 destinations need to be set. One for the source. The other for the destination
+            var firstDestination = new ElevatorDestination
+            {
+                Capacity = boarding,
+                DestinationType = ElevatorDestinationType.PickUp,
+                FloorNumber = request.SourceFloor
+            };
+
+            var finalDestination = new ElevatorDestination
+            {
+                Capacity = boarding,
+                DestinationType = ElevatorDestinationType.DropOff,
+                FloorNumber = request.DestinationFloor
+            };
+
+            var firstDestinationQueue = direction == Direction.Up ? UpwardQueue : DownwardQueue;
+            firstDestinationQueue.Enqueue(firstDestination,firstDestination);
+
+            var finalDestinationQueue = request.SourceFloor < request.DestinationFloor ? UpwardQueue : DownwardQueue;
+            finalDestinationQueue.Enqueue(finalDestination, finalDestination);
         }
         else
         {
-            DownwardQueue.Enqueue(request, request);
-        }
-
-        if (CurrentFloor == request.SourceFloor)
-        {
+            //when source is similar to current floor set only one destination
             ModifyLoading(boarding, ElevatorLoadingOptions.Add);
+            var targetQueue = direction == Direction.Up ? UpwardQueue : DownwardQueue;
+            var destination = new ElevatorDestination
+            {
+                Capacity = boarding,
+                DestinationType = ElevatorDestinationType.DropOff,
+                FloorNumber = request.DestinationFloor
+            };
+            targetQueue.Enqueue(destination,destination);
         }
         
-        //if the lift is idle then automatically set the direction of the first part of the journey
-        if (ElevatorState == ElevatorState.Idle) Direction = request.Direction;
-
         return boarding;
     }
 
@@ -74,25 +112,21 @@ public abstract class BaseElevator
         {
             if (ElevatorState == ElevatorState.Idle)
             {
-                if (CurrentFloor < HighestFloor && UpwardQueue.Count > 0 && (Direction == Direction.Up || Direction == Direction.Neutral))
+                if (Direction != Direction.Neutral)
                 {
-                    Move(Direction.Up);
-                }else if (CurrentFloor > LowestFloor && DownwardQueue.Count > 0 && (Direction == Direction.Down || Direction == Direction.Neutral))
-                {
-                    Move(Direction.Down);
+                    Move(Direction);
                 }
             }else if (ElevatorState == ElevatorState.Moving)
             {
-                var recentRequest = Direction == Direction.Up ? UpwardQueue.Peek() : DownwardQueue.Peek();
-                Console.WriteLine($"Latest request: Source:{recentRequest.SourceFloor} Destination: {recentRequest.DestinationFloor}");
-                DockIfNeeded(recentRequest);
+                var nextDestination = Direction == Direction.Up ? UpwardQueue.Peek() : DownwardQueue.Peek();
+                DockIfNeeded(nextDestination);
             }
             else
             {
                 HandleDockedState();
             }
             
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
         }
     }
 
@@ -111,9 +145,9 @@ public abstract class BaseElevator
         }
     }
 
-    private void DockIfNeeded(Request recentRequest)
+    private void DockIfNeeded(ElevatorDestination destination)
     {
-        if (CurrentFloor == recentRequest.DestinationFloor || CurrentFloor == recentRequest.SourceFloor)
+        if (CurrentFloor == destination.FloorNumber)
         {
             ElevatorState = ElevatorState.Docked;
         }
@@ -131,24 +165,17 @@ public abstract class BaseElevator
         var targetQueue = Direction == Direction.Up ? UpwardQueue : DownwardQueue;
         var otherQueue = targetQueue == UpwardQueue ? DownwardQueue : UpwardQueue;
         var otherDirection = Direction == Direction.Up ? Direction.Down : Direction.Up;
-        //load or unload
-        //todo fix docking logic by utlizing a destinations queue as the factor
-        //todo so long as the destination is set where the source floor is not same as 
-        //todo current floor.
-        var elevatorRequest = targetQueue.Peek();
-        if (CurrentFloor == elevatorRequest.DestinationFloor)
+       
+        var elevatorDestination = targetQueue.Dequeue();
+        if (elevatorDestination.DestinationType == ElevatorDestinationType.DropOff)
         {
-            ModifyLoading(elevatorRequest.Capacity, ElevatorLoadingOptions.Remove);
-            //reached destination. request can be dequeued
-            targetQueue.Dequeue();
+            ModifyLoading(elevatorDestination.Capacity, ElevatorLoadingOptions.Remove);
         }
-
-        if (CurrentFloor == elevatorRequest.SourceFloor)
+        else
         {
-            ModifyLoading(elevatorRequest.Capacity, ElevatorLoadingOptions.Add);
-            Move(elevatorRequest.Direction);
-            return;
+            ModifyLoading(elevatorDestination.Capacity, ElevatorLoadingOptions.Add);
         }
+        
         //check if queue has more items then move in that direction. 
         if (targetQueue.Count > 0)
         {
