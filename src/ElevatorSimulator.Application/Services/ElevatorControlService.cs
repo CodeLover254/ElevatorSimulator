@@ -58,7 +58,7 @@ public class ElevatorControlService: IElevatorControlService
 
             var highestScoringElevator = availableElevators.First();
             var selectedElevator = _building.Elevators[highestScoringElevator.Label];
-            var boarded = selectedElevator.ReceiveRequest(request);
+            var boarded = selectedElevator.ScheduleRequest(request);
 
 
             return new EnqueueResult
