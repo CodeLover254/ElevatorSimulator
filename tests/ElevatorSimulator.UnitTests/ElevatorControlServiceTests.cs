@@ -90,7 +90,7 @@ namespace ElevatorSimulator.UnitTests
         }
         
         [Fact]
-        public void GetElevatorStatus_ThrowsIfSuppliedWrongLable()
+        public void GetElevatorStatus_ThrowsIfSuppliedWrongLabel()
         {
             Action action = () => _testSubject.GetElevatorStatus("W1");
             action.Should().Throw<DomainException>();
