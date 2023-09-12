@@ -198,11 +198,14 @@ public abstract class BaseElevator
         return CurrentFloor == HighestFloor || CurrentFloor == LowestFloor;
     }
 
-    public void Activate()
+    public Task ActivateAsync()
     {
-        Thread elevatorThread = new Thread(Run);
-        elevatorThread.IsBackground = true;
-        elevatorThread.Start();
+        return Task.Run(() =>
+        {
+            Thread elevatorThread = new Thread(Run);
+            elevatorThread.IsBackground = true;
+            elevatorThread.Start();
+        });
     }
     
 }
