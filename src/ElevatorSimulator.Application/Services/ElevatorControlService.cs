@@ -31,17 +31,14 @@ public class ElevatorControlService: IElevatorControlService
         return _building.Elevators.Select(e => e.Value.GetStatus());
     }
 
-    public void ActivateElevators()
+    public async Task ActivateElevatorsAsync()
     {
-        //todo make this async and parallel
-        foreach (var elevator in _building.Elevators.Values)
-        {
-            elevator.Activate();
-        }
+        var activationTasks = _building.Elevators.Values.Select(x => x.ActivateAsync());
+        await Task.WhenAll(activationTasks);
     }
 
 
-    public async Task<EnqueueResult> EnqueueRequest(Request request)
+    public async Task<EnqueueResult> EnqueueRequestAsync(Request request)
     {
         return await Task.Run(() =>
         {
