@@ -31,8 +31,9 @@ public class ElevatorControlService: IElevatorControlService
     /// <exception cref="DomainException"></exception>
     public string GetElevatorStatus(string elevatorLabel)
     {
+        if (!_building.Elevators.ContainsKey(elevatorLabel)) throw new DomainException("Invalid elevator label");
         var elevator = _building.Elevators[elevatorLabel];
-        if (elevator == null) throw new DomainException("Invalid elevator label");
+        
         return elevator.GetStatus();
     }
 
