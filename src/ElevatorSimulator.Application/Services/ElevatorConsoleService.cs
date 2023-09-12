@@ -20,7 +20,11 @@ public class ElevatorConsoleService: IElevatorConsoleService
         _logger = loggerFactory.CreateLogger<ElevatorConsoleService>();
     }
 
-    private void CreateSetup()
+    /// <summary>
+    ///
+    /// </summary>
+    /// <exception cref="DomainException"></exception>
+    private async Task CreateSetup()
     {
         var elevators = new Dictionary<string, BaseElevator>();
 
@@ -70,9 +74,15 @@ public class ElevatorConsoleService: IElevatorConsoleService
         };
 
         _elevatorControlService = new ElevatorControlService(building);
-        _elevatorControlService.ActivateElevators();
+       await _elevatorControlService.ActivateElevatorsAsync();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     private int GetAndValidateNumericInput(Predicate<int> predicate,string message)
     {
         int input;
@@ -96,6 +106,9 @@ public class ElevatorConsoleService: IElevatorConsoleService
         return input;
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
     private async Task CreateMenu()
     {
         while (true)
@@ -128,6 +141,9 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void ProcessViewSingleElevatorStatus()
     {
         var elevatorLabels = _elevatorControlService.GetElevatorLabels();
@@ -148,6 +164,9 @@ public class ElevatorConsoleService: IElevatorConsoleService
         Console.WriteLine("");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void ProcessViewAllElevatorStatus()
     {
         var statuses = _elevatorControlService.GetAllElevatorStatus();
@@ -158,6 +177,9 @@ public class ElevatorConsoleService: IElevatorConsoleService
         Console.WriteLine("");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private async Task ProcessRequestElevator()
     {
         Console.WriteLine("Enter your floor: ");
@@ -168,7 +190,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
             "Invalid destination floor.Try again.");
         Console.WriteLine("Enter number of passengers: ");
         int passengers = GetAndValidateNumericInput(i => i < 0, "There must be at least one passenger");
-        var enqueueRequest = await _elevatorControlService.EnqueueRequest(new Request
+        var enqueueRequest = await _elevatorControlService.EnqueueRequestAsync(new Request
         {
             SourceFloor = sourceFloor,
             DestinationFloor = destinationFloor,
@@ -180,11 +202,14 @@ public class ElevatorConsoleService: IElevatorConsoleService
         Console.WriteLine($"Elevator {enqueueRequest.ElevatorLabel} is on its way. Only {enqueueRequest.BoardedCapacity} will be taken.");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public async Task Interact()
     {
         try
         {
-            CreateSetup();
+            await CreateSetup();
             await CreateMenu();
         }
         catch (DomainException domainException)

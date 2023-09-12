@@ -20,8 +20,14 @@ public abstract class BaseElevator
     public abstract int GetMaximumCapacity();
     public abstract string GetStatus();
     public abstract void ModifyLoading(int number, ElevatorLoadingOptions loadingOptions);
-
-    public virtual int GetAvailabilityScore(Request request)
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public int GetAvailabilityScore(Request request)
     {
         //Check for matching request type and if the elevator is fully loaded
         if (request.RequestType != ElevatorType || IsFullyLoaded()) return (int)ElevatorAvailability.Unavailable;
@@ -56,7 +62,12 @@ public abstract class BaseElevator
 
         return direction;
     }
-
+     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     public int ScheduleRequest(Request request)
     {
         var boarding = Math.Min(RemainingCapacity(), request.Capacity);
@@ -105,7 +116,11 @@ public abstract class BaseElevator
         
         return boarding;
     }
-
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
     private void Run()
     {
         while (true)
@@ -129,7 +144,11 @@ public abstract class BaseElevator
             Thread.Sleep(2000);
         }
     }
-
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="direction"></param>
     private void Move(Direction direction)
     {
         ElevatorState = ElevatorState.Moving;
@@ -144,7 +163,11 @@ public abstract class BaseElevator
                 break;
         }
     }
-
+     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="destination"></param>
     private void DockIfNeeded(ElevatorDestination destination)
     {
         if (CurrentFloor == destination.FloorNumber)
@@ -159,7 +182,10 @@ public abstract class BaseElevator
             }
         }
     }
-
+     
+    /// <summary>
+    /// 
+    /// </summary>
     private void HandleDockedState()
     {
         var targetQueue = Direction == Direction.Up ? UpwardQueue : DownwardQueue;
@@ -192,12 +218,20 @@ public abstract class BaseElevator
         Direction = Direction.Neutral;
         ElevatorState = ElevatorState.Idle;
     }
-
+   
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private bool ReachedThresholdFloor()
     {
         return CurrentFloor == HighestFloor || CurrentFloor == LowestFloor;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public Task ActivateAsync()
     {
         return Task.Run(() =>

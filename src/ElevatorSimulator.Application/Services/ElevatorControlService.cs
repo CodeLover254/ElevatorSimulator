@@ -13,11 +13,21 @@ public class ElevatorControlService: IElevatorControlService
         _building = building;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<string> GetElevatorLabels()
     {
         return _building.Elevators.Select(e => e.Value.Label);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="elevatorLabel"></param>
+    /// <returns></returns>
+    /// <exception cref="DomainException"></exception>
     public string GetElevatorStatus(string elevatorLabel)
     {
         var elevator = _building.Elevators[elevatorLabel];
@@ -25,19 +35,32 @@ public class ElevatorControlService: IElevatorControlService
         return elevator.GetStatus();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="DomainException"></exception>
     public IEnumerable<string> GetAllElevatorStatus()
     {
         if (!_building.Elevators.Any()) throw new DomainException("No available elevators in the building");
         return _building.Elevators.Select(e => e.Value.GetStatus());
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public async Task ActivateElevatorsAsync()
     {
         var activationTasks = _building.Elevators.Values.Select(x => x.ActivateAsync());
         await Task.WhenAll(activationTasks);
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    /// <exception cref="DomainException"></exception>
     public async Task<EnqueueResult> EnqueueRequestAsync(Request request)
     {
         return await Task.Run(() =>
