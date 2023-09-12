@@ -7,6 +7,6 @@ public interface IElevatorControlService
     IEnumerable<string> GetElevatorLabels();
     string GetElevatorStatus(string elevatorLabel);
     IEnumerable<string> GetAllElevatorStatus();
-    void ActivateElevators();
-    Task<EnqueueResult> EnqueueRequest(Request request);
+    Task ActivateElevatorsAsync();
+    Task<EnqueueResult> EnqueueRequestAsync(Request request);
 }
