@@ -14,19 +14,20 @@ public class ElevatorControlService: IElevatorControlService
     }
 
     /// <summary>
-    /// 
+    /// Method returns all elevator labels
     /// </summary>
-    /// <returns></returns>
+    /// <returns>An enumerable containing all elevator labels</returns>
     public IEnumerable<string> GetElevatorLabels()
     {
         return _building.Elevators.Select(e => e.Value.Label);
     }
 
     /// <summary>
-    /// 
+    /// Method returns elevator status showing the elevator label,
+    /// current status, floor and loading for a single elevator
     /// </summary>
     /// <param name="elevatorLabel"></param>
-    /// <returns></returns>
+    /// <returns>A string containing the elevator status info</returns>
     /// <exception cref="DomainException"></exception>
     public string GetElevatorStatus(string elevatorLabel)
     {
@@ -36,9 +37,10 @@ public class ElevatorControlService: IElevatorControlService
     }
 
     /// <summary>
-    /// 
+    /// Method returns elevator status showing the elevator label,
+    /// current status, floor and loading for all elevators
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The list of elevator status</returns>
     /// <exception cref="DomainException"></exception>
     public IEnumerable<string> GetAllElevatorStatus()
     {
@@ -47,7 +49,7 @@ public class ElevatorControlService: IElevatorControlService
     }
 
     /// <summary>
-    /// 
+    /// Method activates all elevators in the building asynchronously
     /// </summary>
     public async Task ActivateElevatorsAsync()
     {
@@ -56,7 +58,8 @@ public class ElevatorControlService: IElevatorControlService
     }
 
     /// <summary>
-    /// 
+    /// Method selects the most available elevator based on their availability
+    /// score and sends a request for it to be scheduled
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>

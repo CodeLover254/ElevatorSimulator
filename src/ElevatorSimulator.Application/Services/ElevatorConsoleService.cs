@@ -21,7 +21,8 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    ///
+    /// Method sets up application configuration and configures
+    /// the building with floors and elevators
     /// </summary>
     /// <exception cref="DomainException"></exception>
     private async Task CreateSetup()
@@ -78,10 +79,12 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    /// 
+    /// Method takes standard input from console, validates
+    /// if the input is a valid numeric then runs the input
+    /// through a predicate for more validation.
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <param name="message"></param>
+    /// <param name="predicate">Predicate</param>
+    /// <param name="message">string</param>
     /// <returns></returns>
     private int GetAndValidateNumericInput(Predicate<int> predicate,string message)
     {
@@ -107,42 +110,49 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
     
     /// <summary>
-    /// 
+    /// Method creates a menu and takes care of the application interaction loop
     /// </summary>
     private async Task CreateMenu()
     {
         while (true)
         {
-            Console.WriteLine("================================");
-            Console.WriteLine("         Elevator System        ");
-            Console.WriteLine("=================================");
-            Console.WriteLine("1. View Single Elevator Status");
-            Console.WriteLine("2. View All Elevators Status");
-            Console.WriteLine("3. Request Elevator");
-            Console.WriteLine("4. Quit Application");
-            Console.WriteLine("=================================");
-            int option = GetAndValidateNumericInput(input=> input < 1 || input > 4, "Invalid input. Try again");
-
-            if (option == 4) break;
-
-            switch (option)
+            try
             {
-                case 1:
-                    ProcessViewSingleElevatorStatus();
-                    break;
-                case 2:
-                    ProcessViewAllElevatorStatus();
-                    break;
-                case 3:
-                    await ProcessRequestElevator();
-                    break;
+                Console.WriteLine("================================");
+                Console.WriteLine("         Elevator System        ");
+                Console.WriteLine("=================================");
+                Console.WriteLine("1. View Single Elevator Status");
+                Console.WriteLine("2. View All Elevators Status");
+                Console.WriteLine("3. Request Elevator");
+                Console.WriteLine("4. Quit Application");
+                Console.WriteLine("=================================");
+                int option = GetAndValidateNumericInput(input => input < 1 || input > 4, "Invalid input. Try again");
+
+                if (option == 4) break;
+
+                switch (option)
+                {
+                    case 1:
+                        ProcessViewSingleElevatorStatus();
+                        break;
+                    case 2:
+                        ProcessViewAllElevatorStatus();
+                        break;
+                    case 3:
+                        await ProcessRequestElevator();
+                        break;
+                }
+            }
+            catch (DomainException domainException)
+            {
+                Console.WriteLine(domainException.Message);
             }
         }
     }
 
 
     /// <summary>
-    /// 
+    /// Method presents single elevator status to the user
     /// </summary>
     private void ProcessViewSingleElevatorStatus()
     {
@@ -165,7 +175,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    /// 
+    /// Method presents all elevator status to the user
     /// </summary>
     private void ProcessViewAllElevatorStatus()
     {
@@ -178,7 +188,7 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    /// 
+    /// Method create session for user to request an elevator
     /// </summary>
     private async Task ProcessRequestElevator()
     {
@@ -203,7 +213,8 @@ public class ElevatorConsoleService: IElevatorConsoleService
     }
 
     /// <summary>
-    /// 
+    /// Method calls CreateSetup and CreateMenu  to complete
+    /// the application startup
     /// </summary>
     public async Task Interact()
     {
