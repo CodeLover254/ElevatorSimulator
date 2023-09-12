@@ -1,0 +1,9 @@
+name: Automated tests for Elevator Simulator
+on:
+  push:
+    branches:
+      - development
+jobs:
+  build_simulator:
+    name: Build Simulator Executable and Test
+    runs-on: ubuntu-latest
