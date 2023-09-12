@@ -33,6 +33,7 @@ public class ElevatorControlService: IElevatorControlService
 
     public void ActivateElevators()
     {
+        //todo make this async and parallel
         foreach (var elevator in _building.Elevators.Values)
         {
             elevator.Activate();
