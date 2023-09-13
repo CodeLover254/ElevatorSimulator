@@ -9,7 +9,7 @@ public abstract class BaseElevator
     public int CurrentFloor { get; set; } = 0;
     public int LowestFloor { get; set; }
     public int HighestFloor { get; set; }
-    public ElevatorType ElevatorType { get; set; }
+    protected virtual ElevatorType ElevatorType { get; set; }
     protected Direction Direction = Direction.Neutral;
     protected ElevatorState ElevatorState = ElevatorState.Idle;
     protected readonly PriorityQueue<ElevatorDestination, ElevatorDestination> UpwardQueue = new(new ElevatorDestinationComparer());

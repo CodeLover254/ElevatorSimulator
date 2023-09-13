@@ -7,6 +7,7 @@ public class PassengerElevator: BaseElevator
 {
     public int MaximumPassengers { get; set; }
     public int Passengers { get; set; } = 0;
+    protected override ElevatorType ElevatorType { get; set; } = ElevatorType.Passenger;
 
     public override bool IsFullyLoaded()
     {

@@ -7,6 +7,7 @@ public class FreightElevator: BaseElevator
 {
     public int MaximumWeight { get; set; }
     public int CurrentWeight { get; set; } = 0;
+    protected override ElevatorType ElevatorType { get; set; } = ElevatorType.Freight;
 
     public override bool IsFullyLoaded()
     {
