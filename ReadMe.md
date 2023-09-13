@@ -1,7 +1,7 @@
 
 # Elevator Simulator
 
-The Elevator Simulator is an application built to simulate scheduling and dispatch of elevators in a building. With this application, your can can explore the intricacies of elevator management, and view how elevators efficiently respond to calls, optimize routes, and handle varying traffic demands. In order to efficiently select the most suitable elevator, the simulator utilizes a custom algorithm that takes three main factors into consideration namely;
+The Elevator Simulator is an application built to simulate scheduling and dispatch of elevators in a building. With this application, your can can explore the intricacies of elevator management, and view how elevators efficiently respond to calls, optimize routes, and handle varying traffic demands. In order to efficiently select the most suitable elevator, the simulator utilizes a custom algorithm that calculates an elevator's availability score taking three main factors into consideration namely;
 
 * Distance from the elevator requester.
 * Current direction the elevator is taking.
@@ -25,7 +25,7 @@ Clone the project
 Go to the project directory
 
 ```bash
-  cd ElevatorSimulator/src
+  cd ElevatorSimulator
 ```
 
 Restore dependencies
@@ -43,8 +43,8 @@ Build the application
 Run application
 
 ```bash
-  cd ElevatorSimulator.Console/bin/Release/net6.0
-  dotnet run ElevatorSimulator.Console.dll
+  cd src/ElevatorSimulator.Console/bin/Release/net6.0
+  dotnet ElevatorSimulator.Console.dll
 ```
 
 
@@ -53,6 +53,7 @@ Run application
 To run tests, run the following command
 
 ```bash
-  dotnet tests
+  cd test/ElevatorSimulator.UnitTests
+  dotnet test ElevatorSimulator.UnitTests.csproj
 ```
 
