@@ -44,7 +44,6 @@ public class ElevatorConsoleService: IElevatorConsoleService
                 {
                     elevator = new PassengerElevator
                     {
-                        ElevatorType = ElevatorType.Passenger,
                         HighestFloor = _buildingSettings.Floors - 1,
                         LowestFloor = 0,
                         Label = $"P{i + 1}",
@@ -55,7 +54,6 @@ public class ElevatorConsoleService: IElevatorConsoleService
                 {
                     elevator = new FreightElevator()
                     {
-                        ElevatorType = ElevatorType.Freight,
                         HighestFloor = _buildingSettings.Floors - 1,
                         LowestFloor = 0,
                         Label = $"F{i + 1}",

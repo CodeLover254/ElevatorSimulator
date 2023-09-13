@@ -22,7 +22,6 @@ namespace ElevatorSimulator.UnitTests
                 HighestFloor = floors - 1,
                 LowestFloor = 0,
                 MaximumPassengers = elevatorCapacity,
-                ElevatorType = ElevatorType.Passenger
             };
             
             var elevators = new Dictionary<string, BaseElevator>
@@ -38,7 +37,6 @@ namespace ElevatorSimulator.UnitTests
                         HighestFloor = floors-1,
                         LowestFloor = 0,
                         MaximumPassengers = elevatorCapacity,
-                        ElevatorType = ElevatorType.Passenger
                     }
                 }, 
                 {
@@ -49,7 +47,6 @@ namespace ElevatorSimulator.UnitTests
                         HighestFloor = floors-1,
                         LowestFloor = 0,
                         MaximumPassengers = elevatorCapacity,
-                        ElevatorType = ElevatorType.Passenger
                     }
                 },
                 {
@@ -60,7 +57,6 @@ namespace ElevatorSimulator.UnitTests
                         HighestFloor = floors-1,
                         LowestFloor = 0,
                         MaximumWeight = elevatorCapacity,
-                        ElevatorType = ElevatorType.Freight
                     }
                 }
             };
